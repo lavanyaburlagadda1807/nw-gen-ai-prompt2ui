@@ -31,6 +31,7 @@ import { toast } from 'react-toastify';
 import type { ActionAlert } from '~/types/actions';
 import ChatAlert from './ChatAlert';
 import type { ModelInfo } from '~/lib/modules/llm/types';
+import { LanguageSelector } from '~/components/common/LanguageSelector';
 
 const TEXTAREA_MIN_HEIGHT = 76;
 
@@ -107,6 +108,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
     const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
     const [transcript, setTranscript] = useState('');
     const [isModelLoading, setIsModelLoading] = useState<string | undefined>('all');
+    const [selectedLanguage, setSelectedLanguage] = useState('en-IN');
 
     useEffect(() => {
       console.log(transcript);
@@ -194,6 +196,21 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
         return [...otherModels, ...providerModels];
       });
       setIsModelLoading(undefined);
+    };
+
+    const onLanguageChange = (language: string) => {
+      setSelectedLanguage(language);
+
+      if (recognition) {
+        recognition.lang = language;
+
+        if (isListening) {
+          stopListening();
+          setTimeout(() => {
+            startListening();
+          }, 1000);
+        }
+      }
     };
 
     const startListening = () => {
@@ -564,6 +581,11 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                           <div className={`i-ph:caret-${isModelSettingsCollapsed ? 'right' : 'down'} text-lg`} />
                           {isModelSettingsCollapsed ? <span className="text-xs">{model}</span> : <span />}
                         </IconButton>
+                        <LanguageSelector
+                          selectedLanguage={selectedLanguage}
+                          onLanguageChange={onLanguageChange}
+                          className="w-22"
+                        />
                       </div>
                       {input.length > 3 ? (
                         <div className="text-xs text-bolt-elements-textTertiary">
