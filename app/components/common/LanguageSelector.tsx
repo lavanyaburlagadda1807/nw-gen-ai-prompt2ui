@@ -17,7 +17,6 @@ interface LanguageSelectorProps {
 }
 
 export function LanguageSelector({ selectedLanguage, onLanguageChange, className = '' }: LanguageSelectorProps) {
-  console.log('>>> selectedLanguage', selectedLanguage);
   return (
     <select
       value={selectedLanguage}

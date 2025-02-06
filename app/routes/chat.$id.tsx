@@ -1,8 +1,10 @@
-import { json, type LoaderFunctionArgs } from '@remix-run/cloudflare';
+import { json, type LoaderFunction } from '@remix-run/cloudflare';
 import { default as IndexRoute } from './_index';
+import { requireAuth } from '~/utils/auth.loader';
 
-export async function loader(args: LoaderFunctionArgs) {
-  return json({ id: args.params.id });
-}
+export const loader: LoaderFunction = async ({ request, params }) => {
+  const auth = await requireAuth(request);
+  return json({ ...auth, id: params.id });
+};
 
 export default IndexRoute;
